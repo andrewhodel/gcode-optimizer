@@ -1,0 +1,42 @@
+<html>
+<title>GCODE Optimizer</title>
+    <head>
+	<link rel="stylesheet" href="./css/style.css" />
+	<link rel="stylesheet" href="./css/bootstrap.min.css" />
+
+	<script type="text/javascript" src="./lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="./src/main.js"></script>
+	<script type="text/javascript" src="./src/algorithm.js"></script>
+	<script type="text/javascript" src="./src/utils.js"></script>
+	<script type="text/javascript" src="./src/data.js"></script>
+    </head>
+    <body>
+	<div class="container">
+	    <header>
+		<h1 id="title">GCODE Optimizer</h1>
+<p>This uses a <a href="https://github.com/parano/GeneticAlgorithm-Solving-TSP/raw/master/doc/Genetic-Algorithm-For-Solving-TSP-Chaoyu.pdf">Genetic Algorithm</a> for optimizing the traveling salesman problem for G0 (linear moves) commands in GCODE.</p>
+<p>Simply upload a GCODE file and click Start/Restart, the program will loop and further optimize the hops between G0 points.  When you are happy with the results, click Stop/Continue and then you can click Save Optimized GCODE to save the optimized file.</p>
+<p>The program expects G0 commands to only happen above the material (when there is no cut happening).</p>
+<p>It probably does not make sense to use this tool if you are cutting completely through the material unless you are using tabs on the outer cut of an object.  <a href="http://millcrum.com">Millcrum</a> is a CAM tool which will add tabs to the path.</p>
+<p>It was created by Andrew Hodel in 2015 based on the code cited in the paper (pdf) explaining the algorithm.  There are some other projects that may interest you at <a href="http://xyzbots.com">http://xyzbots.com</a></p>
+	    </header>
+	    <div class="row-fluid" style="width: 900px; border-top: 1px solid #000; margin-top: 20px;">
+		<br />
+		    <p style="display: inline;">Open GCODE</p>
+			<input type="file" id="loadGcode"></input>
+		<div style="float: right;" id="control_bottons" class="btn-group row">
+		    <button id="start_btn" class="btn">Start/Restart</button>
+		    <button id="stop_btn" class="btn">Stop/Continue</button>
+		    <button id="save_btn" class="btn">Save Optimized Gcode</button>
+		</div>
+		<div class="row">
+		    <span style="margin: 0px; float: right; clear: both;" id="status" class="show-grid"></span>
+		</div>
+		<canvas id="canvas" width="860" height="600" style="border:1px solid; margin-top: 5px;"></canvas>
+	    </div>
+	</div>
+<br />
+	<footer>
+	</footer>
+    </body>
+</html>
