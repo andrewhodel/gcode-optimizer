@@ -224,14 +224,14 @@ r.onload = function(e) {
   $('#save_btn').click(function() {
 
 	if (ran === false) {
-		alert('you must first click Start/Restart to run the optimization before saving the file');
+		alert('you must first click Start/Restart to run the optimisation before saving the file');
 		return false;
 	}
 
 	running = false;
 
 	if (validFile === false) {
-		alert('you must upload a gcode file to save an optimized version');
+		alert('you must upload a gcode file to save an optimised version');
 		return false;
 	}
 
@@ -253,7 +253,12 @@ console.log(points[best[0]]);
 	}
 
 	var blob = new Blob([fout]);
-	saveAs(blob, 'optimized_'+gc.value, true);
+	var fn = gc.value;
+	if (fn.substr(0,12) == 'C:\\fakepath\\') {
+		// remove that chrome/chromium fakepath
+		fn = fn.substr(12);
+	}
+	saveAs(blob, 'optimised_'+fn, true);
   });
 
   $('#stop_btn').click(function() {
