@@ -55,6 +55,7 @@ function getXY(s) {
 }
 
 var priorToG0 = [];
+var eof = [];
 
 gc.addEventListener('change', function(e) {
 var r = new FileReader();
@@ -105,10 +106,12 @@ r.onload = function(e) {
 				}
 
 				if (allG0.length > 0) {
+
 					// allG0 has entries, so we need to add notG0 to the followingLines for the previous entry in allG0
 					for (var mm=0; mm<notG0.length; mm++) {
 						allG0[allG0.length-1].followingLines.push(notG0[mm]);
 					}
+
 				}
 
 				// this G0 has a valid X or Y coordinate, add it to allG0 with itself (the G0) as the first entry in followingLines
@@ -129,8 +132,26 @@ r.onload = function(e) {
 		if (allG0.length == 0) {
 			// this holds lines prior to the first G0 for use later
 			priorToG0.push(nl[c]);
+
 		}
 
+	}
+
+	console.log(notG0);
+
+	// add notG0 to the followingLines for the last entry in allG0
+	// this gets the lines after the last G0 in the file
+	// we also need to check if the commands here are not G0, G1, G2, G3, or G4
+	// because in this case they should be left at the end of the file, not put into the parent G0 block
+	for (var mm=0; mm<notG0.length; mm++) {
+		var sb = notG0[mm].substr(0,3);
+		if (sb == 'g0 ' || sb == 'g1 ' || sb == 'g2 ' || sb == 'g3 ' || sb == 'g4 ') {
+			// this should be added to the parent G0 block
+			allG0[allG0.length-1].followingLines.push(notG0[mm]);
+		} else {
+			// this should be added to the end of the file as it was already there
+			eof.push(notG0[mm]);
+		}
 	}
 
 	console.log('priorToG0',priorToG0);
@@ -226,6 +247,9 @@ console.log(points[best[0]]);
 		for (var n=0; n<points[best[c]].followingLines.length; n++) {
 			fout += points[best[c]].followingLines[n] + '\n';
 		}
+	}
+	for (var c=0; c<eof.length; c++) {
+		fout += eof[c] + '\n';
 	}
 
 	var blob = new Blob([fout]);
