@@ -70,6 +70,8 @@ r.onload = function(e) {
 	// split the file by newlines
 	var nl = r.result.split('\n');
 
+	console.log(nl);
+
 	// loop through each newline
 	for (var c=0; c<nl.length; c++) {
 
@@ -79,15 +81,17 @@ r.onload = function(e) {
 		// check if this line is a G0 command
 		if (nl[c].substr(0,3) == 'g0 ') {
 
+			console.log('found g0');
+
 			// this line is a G0 command, get the X and Y values
 			var xy = getXY(nl[c]);
 			var x = xy[0];
 			var y = xy[1];
 
 			// check if x or y exist for this line
-			if (x !== false || y !== false) {
+			if ((x !== false || y !== false) && (x !== false && y !== false)) {
 				// if x or y here is false we need to use the last coordinate from the previous G0 or G1 in followingLines as that is where the machine would be
-				if (y === false) {
+				if (y === false && allG0.length > 0) {
 					// loop through allG0[-1].followingLines to find the most recent G0 or G1 with a y coordinate
 					for (var h=0; h<allG0[-1].followingLines.length; h++) {
 						if ((allG0[-1].followingLines[h].substr(0,3) == 'g0 ' || allG0[-1].followingLines[h].substr(0,3) == 'g1 ') && allG0[-1].followingLines[h].match(/ y/)) {
@@ -95,7 +99,7 @@ r.onload = function(e) {
 							y = getXY(allG0[-1].followingLines[h])[1];
 						}
 					}
-				} else if (x === false) {
+				} else if (x === false && allG0.length > 0) {
 					// loop through allG0[-1].followingLines to find the most recent G0 or G1 with a x coordinate
 					for (var h=0; h<allG0[-1].followingLines.length; h++) {
 						if ((allG0[-1].followingLines[h].substr(0,3) == 'g0 ' || allG0[-1].followingLines[h].substr(0,3) == 'g1 ') && allG0[-1].followingLines[h].match(/ x/)) {
@@ -113,6 +117,7 @@ r.onload = function(e) {
 					}
 
 				}
+
 
 				// this G0 has a valid X or Y coordinate, add it to allG0 with itself (the G0) as the first entry in followingLines
 				allG0.push({x:x,y:y,followingLines:[nl[c]]});
