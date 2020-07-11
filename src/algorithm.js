@@ -34,7 +34,7 @@ function tribulate() {
   //for(var i=0; i<POPULATION_SIZE; i++) {
   for(var i=population.length>>1; i<POPULATION_SIZE; i++) {
     population[i] = randomIndivial(points.length);
-  }	
+  }
 }
 function selection() {
   var parents = new Array();
@@ -56,14 +56,14 @@ function crossover() {
     if( Math.random() < CROSSOVER_PROBABILITY ) {
       queue.push(i);
     }
-  } 
+  }
   queue.shuffle();
   for(var i=0, j=queue.length-1; i<j; i+=2) {
     doCrossover(queue[i], queue[i+1]);
     //oxCrossover(queue[i], queue[i+1]);
   }
 }
-//function oxCrossover(x, y) {	
+//function oxCrossover(x, y) {
 //  //var px = population[x].roll();
 //  //var py = population[y].roll();
 //  var px = population[x].slice(0);
@@ -117,7 +117,7 @@ function mutation() {
     }
   }
 }
-function preciseMutate(orseq) {  
+function preciseMutate(orseq) {
   var seq = orseq.clone();
   if(Math.random() > 0.5){
     seq.reverse();
@@ -133,7 +133,7 @@ function preciseMutate(orseq) {
   //alert(bestv);
   return seq;
 }
-function preciseMutate1(orseq) {  
+function preciseMutate1(orseq) {
   var seq = orseq.clone();
   var bestv = evaluate(seq);
 
@@ -246,7 +246,7 @@ function countDistances() {
   for(var i=0; i<length; i++) {
     dis[i] = new Array(length);
     for(var j=0; j<length; j++) {
-      dis[i][j] = ~~distance(points[i], points[j]); 
+      dis[i][j] = ~~distance(points[i].endsAt, points[j]);
     }
   }
 }

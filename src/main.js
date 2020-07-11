@@ -23,6 +23,7 @@ var population;
 var values;
 var fitnessValues;
 var roulette;
+var scaleFactor;
 
 $(function() {
 
@@ -144,6 +145,17 @@ r.onload = function(e) {
 
 	console.log(notG0);
 
+	// find ending point of each segment
+	for (let some of allG0) {
+		for (let j = some.followingLines.length - 1; j >= 0; j--) {
+			let xy = getXY(some.followingLines[j]);
+			if (xy[0] !== false && xy[1] !== false) {
+				some.endsAt = { x: xy[0], y: xy[1] };
+				break;
+			}
+		}
+	}
+
 	// add notG0 to the followingLines for the last entry in allG0
 	// this gets the lines after the last G0 in the file
 	// we also need to check if the commands here are not G0, G1, G2, G3, or G4
@@ -196,16 +208,7 @@ r.onload = function(e) {
 		sf = yf;
 	}
 
-	for (var p=0; p<allG0.length; p++) {
-
-		// scale it
-		allG0[p].y = allG0[p].y*sf;
-		allG0[p].x = allG0[p].x*sf;
-
-		// flip the y axis because cnc and canvas world are opposite there
-		allG0[p].y = 600 - allG0[p].y;
-
-	}
+	ctx.setTransform(scaleFactor, 0, 0, -scaleFactor, 0, 600);
 
 	points = allG0;
 	draw();
@@ -215,7 +218,7 @@ r.onload = function(e) {
 }
 });
 
-  $('#start_btn').click(function() { 
+  $('#start_btn').click(function() {
     if(points.length >= 3) {
       initData();
       GAInitialize();
@@ -304,7 +307,8 @@ function initData() {
   roulette = new Array(POPULATION_SIZE);
 }
 
-function drawCircle(point) {
+function drawCircle(point, fillStyle = '#000') {
+	ctx.fillStyle = fillStyle;
   ctx.fillStyle   = '#000';
   ctx.beginPath();
   ctx.arc(point.x, point.y, 3, 0, Math.PI*2, true);
@@ -321,9 +325,15 @@ function drawLines(array) {
   ctx.moveTo(points[array[0]].x, points[array[0]].y);
 
 // loop through and draw lines to each other point
-  for(var i=1; i<array.length; i++) {
-    ctx.lineTo( points[array[i]].x, points[array[i]].y )
-  }
+	for (var i = 1; i < array.length; i++) {
+		ctx.lineTo(points[array[i]].x, points[array[i]].y)
+		let endpoint = points[array[i - 1]].endsAt;
+		if (endpoint) {
+			ctx.moveTo(endpoint.x, endpoint.y);
+		}
+		let movepoint = points[array[i]];
+		ctx.lineTo(movepoint.x, movepoint.y);
+	}
   ctx.lineTo(points[array[0]].x, points[array[0]].y);
 
   ctx.stroke();
@@ -350,6 +360,10 @@ function draw() {
       drawCircle(points[i]);
     }
 
+		for (var i = 0; i < points.length; i++) {
+			drawCircle(points[i].endsAt, "#00ff00");
+		}
+
 	// draw the path
     if(best.length === points.length) {
       drawLines(best);
@@ -359,5 +373,8 @@ function draw() {
 }
 
 function clearCanvas() {
-  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+	let xform = ctx.getTransform();
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	ctx.clearRect(0, 0, WIDTH, HEIGHT);
+	ctx.setTransform(xform);
 }
